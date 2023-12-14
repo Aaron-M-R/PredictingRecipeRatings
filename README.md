@@ -1,6 +1,8 @@
 # PredictingRecipeRatings
 This project builds a random forest regressor that predicts the rating for recipes without a rating.
 
+Our exploratory data analysis can be found <a href="https://aaron-m-r.github.io/PredictingRecipeRatings/">here</a>
+
 ## Framing the Problem
 During our exploratory data analysis, we discovered many recipes were missing a rating. Although it appears in the original dataset that some reviews have a score of zero, we reasoned that this most likely instead indicates a lack of a rating. Instead of imputing these missing values using the mean rating or a probabilistic model, we would like to use machine learning to predict these ratings based on other available features.
 
@@ -17,6 +19,12 @@ We'll begin our modeling process by first only taking into account non-nutrition
 
 ### Pipeline and Transformations
 For our baseline model, we'll use a pipeline that transforms the design matrix using the natural logarithm, since these features are all skewed right. 
+
+<iframe src="plots/quant_dists.html" width=800 height=600 frameBorder=0></iframe>
+
+Here, we can see from the difference in shapes of the plots that using a logarithmic transformer reduces the skewness of the data, therefore making it easier to predict.
+
+<iframe src="plots/log_quant_dists.html" width=800 height=600 frameBorder=0></iframe>
 
 We began modeling with linear regression. We are restricting our baseline model to variables that indicate recipe difficulty/required effort. We used number of minutes, steps and ingredients, which are all quantitative variables. Using this model, where each feature is the natural log of the origianl data using a column transformer, the predictions have an r squared value of about -350. This is extremely low, making this a very poor model. This means that our model is worse than the ideal constant model, which we imagine also isn't very accurate.
 
@@ -38,5 +46,7 @@ Our model has done better now that we've taken review sentiment into account, ho
 **Alternative Hypothesis:** Our model is unfair, and predicts ratings for recipes with 1 review with less accuracy than for recipes with multipel reviews.
 
 We observed that our model predicts ratings better (difference of about 1.7 in R squared value) for recipes with multiple ratings than for recipes with just one rating. Our permutation test aims to see if this is by chance, or if it is due to a difference in the two populations.
+
+<iframe src="plots/permutation.html" width=800 height=600 frameBorder=0></iframe>
 
 Unfortunately, we must reject our null hypothesis in favor of the alternative. This means we believe our model has unfair predictions in that it is more accurate for recipes with multiple ratings. Although we could blame the model itself, there is most likely a reason behind this that is outside of our control. We suspect our most informative feature is review sentiment. In statistics, predictions improve with a higher sample size. This means that it makes sense why the model performs better on recipes with more reviews: it's simply performing better when there is a higher sample size. Although we would like to improve our model, we can't deny the fact that our aim is to predict data which has little information.
